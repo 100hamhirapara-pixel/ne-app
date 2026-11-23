@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3D5C">
+<title>Navi Energy</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="config.js"></script>
+<style>
+:root{--navy:#0B3D5C;--navy2:#0E4A6F;--amber:#F5A623;--bg:#F3F5F7;--card:#fff;--text:#16222E;--muted:#667380;--line:#E2E6EA;--red:#C93C3C;--green:#1C8F59}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.4}
+.hide{display:none!important}
+button{font:inherit;cursor:pointer}
+input,select{font:inherit}
+
+/* Header */
+header{position:sticky;top:0;z-index:5;background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top) + 10px) 12px 10px 16px;display:flex;align-items:center;gap:8px}
+header .t{flex:1;min-width:0}
+header .t b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .t small{opacity:.75;font-size:13px}
+.ib{background:none;border:0;color:inherit;font-size:20px;width:42px;height:42px;border-radius:10px;display:grid;place-items:center}
+.ib:active{background:rgba(255,255,255,.15)}
+main{padding:14px 14px 40px;max-width:760px;margin:0 auto}
+
+/* Login */
+.auth{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:24px;background:linear-gradient(160deg,var(--navy),var(--navy2))}
+.auth .card{background:#fff;border-radius:20px;padding:26px 22px;max-width:380px;width:100%;margin:0 auto;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.logo{width:64px;height:64px;border-radius:16px;display:block;margin:0 auto 12px}
+.auth h1{text-align:center;font-size:21px;margin:0}
+.auth p.sub{text-align:center;color:var(--muted);margin:4px 0 20px;font-size:14px}
+label.f{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px;font-weight:600}
+.in{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:17px;background:#fff;color:var(--text);outline:none}
+.in:focus{border-color:var(--navy)}
+.pin{letter-spacing:.5em;text-align:center;font-size:22px}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;background:var(--navy);color:#fff;font-weight:700;font-size:16px;margin-top:18px}
+.btn:active{opacity:.85}
+.btn[disabled]{opacity:.55}
+.btn.amber{background:var(--amber);color:#1b1b1b}
+.btn.ghost{background:#EEF2F5;color:var(--text)}
+.btn.red{background:#FBEAEA;color:var(--red)}
+.msg{min-height:20px;margin-top:12px;font-size:14px;text-align:center;color:var(--red)}
+.msg.ok{color:var(--green)}
+
+/* Home */
+.search{width:100%;padding:12px 14px 12px 40px;border:1px solid var(--line);border-radius:12px;font-size:16px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23667380' stroke-width='2'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='M13 13l4 4'/%3E%3C/svg%3E") no-repeat 13px center;outline:none}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:20px 4px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 6px 12px;text-align:center;user-select:none;transition:transform .08s}
+.tile:active{transform:scale(.95);background:#F7F9FB}
+.tile .i{font-size:34px;line-height:40px;height:40px}
+.tile .n{font-size:13px;font-weight:600;margin-top:8px;line-height:1.25;word-break:break-word}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.empty div{font-size:40px;margin-bottom:8px}
+
+/* Sheet (bottom drawer) */
+.back{position:fixed;inset:0;background:rgba(10,20,30,.45);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:#fff;border-radius:20px 20px 0 0;max-height:88vh;overflow:auto;padding:8px 18px calc(env(safe-area-inset-bottom) + 20px);max-width:760px;margin:0 auto}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 12px}
+.sheet h2{font-size:18px;margin:4px 0 8px}
+.mi{display:flex;align-items:center;gap:14px;padding:14px 6px;border-bottom:1px solid var(--line);font-size:16px;background:none;border-left:0;border-right:0;border-top:0;width:100%;text-align:left;color:var(--text)}
+.mi span{font-size:20px;width:28px;text-align:center}
+
+/* Admin */
+.tabs{display:flex;gap:6px;background:#E6EBEF;padding:4px;border-radius:12px;margin-bottom:12px}
+.tabs button{flex:1;border:0;padding:10px;border-radius:9px;background:none;font-weight:600;color:var(--muted)}
+.tabs button.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.row .ic{font-size:26px;width:34px;text-align:center}
+.row .bd{flex:1;min-width:0}
+.row .bd b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .bd small{color:var(--muted);font-size:13px}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:#E8F0F6;color:var(--navy)}
+.tag.off{background:#F6E7E7;color:var(--red)}
+.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 20px);z-index:6;background:var(--amber);color:#1b1b1b;border:0;border-radius:28px;padding:14px 20px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:8px 12px;font-size:14px;font-weight:600;color:var(--muted)}
+.chip.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.sw{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.sw input{width:22px;height:22px;accent-color:var(--navy)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pinbox{background:#FFF7E8;border:1px dashed var(--amber);border-radius:14px;padding:16px;text-align:center;margin-top:12px}
+.pinbox b{font-size:30px;letter-spacing:.3em;display:block;margin:6px 0}
+
+/* In-app frame */
+#frame{position:fixed;inset:0;z-index:30;background:#fff;display:flex;flex-direction:column}
+#frame iframe{flex:1;border:0;width:100%}
+
+/* Toast */
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%);background:#16222E;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;z-index:50;max-width:90%;text-align:center;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sync{height:3px;background:linear-gradient(90deg,transparent,var(--amber),transparent);background-size:200% 100%;animation:sy 1s linear infinite}
+@keyframes sy{from{background-position:200% 0}to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<section id="vLogin" class="auth hide">
+  <div class="card">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1 id="coName">Navi Energy</h1>
+    <p class="sub">Team login</p>
+    <form id="fLogin" autocomplete="on">
+      <label class="f" for="lMobile">Mobile number</label>
+      <input class="in" id="lMobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit" autocomplete="username" required>
+      <label class="f" for="lPin">PIN</label>
+      <input class="in pin" id="lPin" type="password" inputmode="numeric" maxlength="6" placeholder="••••" autocomplete="current-password" required>
+      <button class="btn" id="bLogin" type="submit">Login</button>
+      <div class="msg" id="mLogin"></div>
+    </form>
+  </div>
+</section>
+
+<!-- SET PIN -->
+<section id="vPin" class="auth hide">
+  <div class="card">
+    <img class="logo" src="icon-192.png" alt="">
+    <h1>Navo PIN banavo</h1>
+    <p class="sub">4 thi 6 aankda. Koi ne batavta nahi.</p>
+    <form id="fPin">
+      <div id="oldWrap">
+        <label class="f" for="pOld">Juno / temporary PIN</label>
+        <input class="in pin" id="pOld" type="password" inputmode="numeric" maxlength="6">
+      </div>
+      <label class="f" for="pNew">Navo PIN</label>
+      <input class="in pin" id="pNew" type="password" inputmode="numeric" maxlength="6" required>
+      <label class="f" for="pNew2">Farithi navo PIN</label>
+      <input class="in pin" id="pNew2" type="password" inputmode="numeric" maxlength="6" required>
+      <button class="btn" id="bPin" type="submit">PIN save karo</button>
+      <button class="btn ghost hide" id="bPinCancel" type="button">Cancel</button>
+      <div class="msg" id="mPin"></div>
+    </form>
+  </div>
+</section>
+
+<!-- HOME -->
+<section id="vHome" class="hide">
+  <header>
+    <div class="t"><b id="hName">Navi Energy</b><small id="hRole"></small></div>
+    <button class="ib" id="bRefresh" aria-label="Refresh">⟳</button>
+    <button class="ib" id="bMenu" aria-label="Menu">☰</button>
+  </header>
+  <div id="syncBar" class="sync hide"></div>
+  <main>
+    <input class="search" id="q" type="search" placeholder="App shodho…" autocomplete="off">
+    <div id="appList"></div>
+  </main>
+</section>
+
+<!-- ADMIN -->
+<section id="vAdmin" class="hide">
+  <header>
+    <button class="ib" id="bAdminBack" aria-label="Back">←</button>
+    <div class="t"><b>Admin</b><small>Users ane apps manage karo</small></div>
+  </header>
+  <main>
+    <div class="tabs"><button id="tUsers" class="on">👤 Users</button><button id="tApps">📱 Apps</button></div>
+    <div id="adminList"></div>
+  </main>
+  <button class="fab" id="bAdd">＋ Add</button>
+</section>
+
+<div id="frame" class="hide">
+  <header>
+    <button class="ib" id="bFrameBack" aria-label="Back">←</button>
+    <div class="t"><b id="frameTitle"></b></div>
+    <button class="ib" id="bFrameExt" aria-label="Open outside">↗</button>
+  </header>
+  <iframe id="frameEl" title="App" allow="clipboard-write; camera; geolocation"></iframe>
+</div>
+
+<div id="back" class="back hide"></div>
+<div id="sheet" class="sheet hide"></div>
+<div id="toast" class="hide"></div>
+
+<script>
+'use strict';
+const CFG = window.NE_CONFIG || {};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+const S = { token: store.get('ne_token'), user: store.get('ne_user'), apps: store.get('ne_apps') || [],
+            uses: store.get('ne_uses') || {}, pin: null, admin: { tab: 'users', users: [], apps: [], roles: [] } };
+let installEvt = null;
+
+/* ---------- API ---------- */
+async function api(action, body = {}) {
+  if (!CFG.API_URL || CFG.API_URL.indexOf('PASTE') === 0) throw new Error('config.js ma API_URL nakho');
+  let res;
+  try {
+    res = await fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                    body: JSON.stringify(Object.assign({ action, token: S.token }, body)) });
+  } catch (e) { throw new Error('Internet connection check karo'); }
+  let j;
+  try { j = await res.json(); } catch (e) { throw new Error('Server response khotu che (API URL / deployment check karo)'); }
+  if (!j.ok) {
+    if (j.code === 'AUTH' && action !== 'login') { clearSession(); show('vLogin'); }
+    const err = new Error(j.error); err.code = j.code; throw err;
+  }
+  return j.data;
+}
+
+/* ---------- UI helpers ---------- */
+function show(id) { ['vLogin','vPin','vHome','vAdmin'].forEach(v => $('#'+v).classList.toggle('hide', v !== id)); window.scrollTo(0,0); }
+let tT;
+function toast(t, ms = 2600) { const el = $('#toast'); el.textContent = t; el.classList.remove('hide'); clearTimeout(tT); tT = setTimeout(() => el.classList.add('hide'), ms); }
+function busy(btn, on, label) { if (on) { btn.dataset.l = btn.innerHTML; btn.innerHTML = '<span class="spin"></span>'; btn.disabled = true; } else { btn.innerHTML = label || btn.dataset.l; btn.disabled = false; } }
+function openSheet(html) { $('#sheet').innerHTML = '<div class="grab"></div>' + html; $('#sheet').classList.remove('hide'); $('#back').classList.remove('hide'); $('#sheet').scrollTop = 0; }
+function closeSheet() { $('#sheet').classList.add('hide'); $('#back').classList.add('hide'); }
+$('#back').onclick = closeSheet;
+
+function saveSession(d) {
+  if (d.token) { S.token = d.token; store.set('ne_token', d.token); }
+  if (d.user) { S.user = d.user; store.set('ne_user', d.user); }
+  if (d.apps) { S.apps = d.apps; store.set('ne_apps', d.apps); }
+}
+function clearSession() { S.token = null; S.user = null; S.apps = []; ['ne_token','ne_user','ne_apps'].forEach(k => store.set(k, null)); }
+
+/* ---------- LOGIN ---------- */
+$('#fLogin').onsubmit = async e => {
+  e.preventDefault();
+  const mobile = $('#lMobile').value.replace(/\D/g,''), pin = $('#lPin').value.trim(), b = $('#bLogin'), m = $('#mLogin');
+  m.textContent = '';
+  if (mobile.length !== 10) { m.textContent = '10-digit mobile nakho'; return; }
+  if (!/^\d{4,6}$/.test(pin)) { m.textContent = 'PIN 4–6 aankda no hoy'; return; }
+  busy(b, true);
+  try {
+    const d = await api('login', { mobile, pin });
+    saveSession(d); S.pin = pin; $('#lPin').value = '';
+    afterAuth();
+  } catch (x) { m.textContent = x.message; }
+  busy(b, false);
+};
+
+function afterAuth() {
+  if (S.user && S.user.mustChange) openPinScreen(true);
+  else { renderHome(); show('vHome'); }
+}
+
+/* ---------- PIN ---------- */
+let pinForced = false;
+function openPinScreen(forced) {
+  pinForced = forced;
+  $('#oldWrap').classList.toggle('hide', !!(forced && S.pin));
+  $('#bPinCancel').classList.toggle('hide', forced);
+  ['#pOld','#pNew','#pNew2'].forEach(s => $(s).value = '');
+  $('#mPin').textContent = '';
+  show('vPin');
+}
+$('#bPinCancel').onclick = () => show('vHome');
+$('#fPin').onsubmit = async e => {
+  e.preventDefault();
+  const oldPin = (pinForced && S.pin) ? S.pin : $('#pOld').value.trim();
+  const n1 = $('#pNew').value.trim(), n2 = $('#pNew2').value.trim(), m = $('#mPin'), b = $('#bPin');
+  m.className = 'msg'; m.textContent = '';
+  if (!oldPin) { m.textContent = 'Juno PIN nakho'; return; }
+  if (!/^\d{4,6}$/.test(n1)) { m.textContent = 'PIN 4 thi 6 aankda no hovo joie'; return; }
+  if (n1 !== n2) { m.textContent = 'Banne PIN match nathi thata'; return; }
+  busy(b, true);
+  try {
+    await api('changePin', { oldPin, newPin: n1 });
+    S.pin = null;
+    toast('PIN badlai gayo ✓');
+    await refresh(true);
+    show('vHome');
+  } catch (x) { m.textContent = x.message; }
+  busy(b, false);
+};
+
+/* ---------- HOME ---------- */
+function renderHome() {
+  const u = S.user || {};
+  $('#hName').textContent = u.name ? ('Namaste, ' + u.name.split(' ')[0]) : (CFG.COMPANY || 'Navi Energy');
+  $('#hRole').textContent = (CFG.COMPANY || 'Navi Energy') + (u.role ? ' · ' + u.role : '');
+  const q = $('#q').value.trim().toLowerCase();
+  const list = S.apps.filter(a => !q || (a.name + ' ' + a.category).toLowerCase().includes(q));
+  const box = $('#appList');
+  if (!S.apps.length) { box.innerHTML = '<div class="empty"><div>📭</div>Tamara role mate hal koi app nathi.<br>Admin ne kaho.</div>'; return; }
+  if (!list.length) { box.innerHTML = '<div class="empty"><div>🔍</div>"' + esc(q) + '" naam ni koi app nathi</div>'; return; }
+  let html = '';
+  if (!q) {
+    const recent = S.apps.filter(a => S.uses[a.id]).sort((a,b) => S.uses[b.id] - S.uses[a.id]).slice(0, 4);
+    if (recent.length >= 2 && S.apps.length > 6) html += section('⭐ Vadhare vaprati', recent);
+  }
+  const cats = [];
+  list.forEach(a => { if (!cats.includes(a.category)) cats.push(a.category); });
+  cats.forEach(c => html += section(c, list.filter(a => a.category === c)));
+  box.innerHTML = html;
+}
+function section(title, apps) {
+  return '<h3>' + esc(title) + '</h3><div class="grid">' + apps.map(a =>
+    '<div class="tile" role="button" tabindex="0" data-app="' + esc(a.id) + '"><div class="i">' + esc(a.icon) + '</div><div class="n">' + esc(a.name) + '</div></div>').join('') + '</div>';
+}
+$('#appList').onclick = e => { const t = e.target.closest('[data-app]'); if (t) openApp(S.apps.find(a => a.id === t.dataset.app)); };
+$('#q').oninput = renderHome;
+
+function appUrl(a) {
+  if (!a.passToken) return a.url;
+  return a.url + (a.url.includes('?') ? '&' : '?') + 'ne_token=' + encodeURIComponent(S.token);
+}
+function openApp(a) {
+  if (!a) return;
+  S.uses[a.id] = Date.now(); store.set('ne_uses', S.uses);
+  const url = appUrl(a);
+  if (a.openMode === 'inapp') {
+    $('#frameTitle').textContent = a.name;
+    $('#frameEl').src = url;
+    $('#bFrameExt').onclick = () => window.open(url, '_blank', 'noopener');
+    $('#frame').classList.remove('hide');
+    history.pushState({ frame: 1 }, '');
+  } else {
+    window.open(url, '_blank', 'noopener');
+  }
+}
+function closeFrame() { $('#frame').classList.add('hide'); $('#frameEl').src = 'about:blank'; }
+$('#bFrameBack').onclick = () => history.back();
+window.addEventListener('popstate', () => { if (!$('#frame').classList.contains('hide')) closeFrame(); });
+
+async function refresh(silent) {
+  if (!S.token) return;
+  $('#syncBar').classList.remove('hide');
+  try {
+    const d = await api('bootstrap');
+    saveSession(d);
+    if (S.user.mustChange) { openPinScreen(true); return; }
+    renderHome();
+    if (!silent) toast('Updated ✓', 1200);
+  } catch (x) { if (x.code !== 'AUTH' && !silent) toast(x.message); }
+  finally { $('#syncBar').classList.add('hide'); }
+}
+$('#bRefresh').onclick = () => refresh(false);
+
+/* ---------- MENU ---------- */
+$('#bMenu').onclick = () => {
+  const u = S.user || {};
+  openSheet('<h2>' + esc(u.name || '') + '</h2><div style="color:var(--muted);font-size:14px;margin-bottom:6px">' + esc(u.mobile || '') + ' · ' + esc(u.role || '') + '</div>' +
+    (u.role === 'ADMIN' ? '<button class="mi" data-m="admin"><span>⚙️</span>Admin — users ane apps</button>' : '') +
+    (installEvt ? '<button class="mi" data-m="install"><span>📲</span>Phone ma install karo</button>' : '') +
+    '<button class="mi" data-m="pin"><span>🔑</span>PIN badlo</button>' +
+    '<button class="mi" data-m="logout" style="color:var(--red)"><span>🚪</span>Logout</button>');
+};
+$('#sheet').addEventListener('click', async e => {
+  const m = e.target.closest('[data-m]'); if (!m) return;
+  const k = m.dataset.m; closeSheet();
+  if (k === 'admin') openAdmin();
+  if (k === 'pin') openPinScreen(false);
+  if (k === 'install' && installEvt) { installEvt.prompt(); installEvt = null; }
+  if (k === 'logout') { try { await api('logout'); } catch (x) {} clearSession(); show('vLogin'); }
+});
+
+/* ---------- ADMIN ---------- */
+function openAdmin() { show('vAdmin'); setTab(S.admin.tab); }
+$('#bAdminBack').onclick = () => { show('vHome'); refresh(true); };
+$('#tUsers').onclick = () => setTab('users');
+$('#tApps').onclick = () => setTab('apps');
+async function setTab(t) {
+  S.admin.tab = t;
+  $('#tUsers').classList.toggle('on', t === 'users'); $('#tApps').classList.toggle('on', t === 'apps');
+  $('#bAdd').textContent = t === 'users' ? '＋ User' : '＋ App';
+  const box = $('#adminList'); box.innerHTML = '<div class="empty"><div>⏳</div>Load thay che…</div>';
+  try {
+    if (t === 'users') { const d = await api('adminUsers'); S.admin.users = d.users; S.admin.roles = d.roles; }
+    else { const d = await api('adminApps'); S.admin.apps = d.apps; S.admin.roles = d.roles; }
+    renderAdmin();
+  } catch (x) { box.innerHTML = '<div class="empty"><div>⚠️</div>' + esc(x.message) + '</div>'; }
+}
+function renderAdmin() {
+  const box = $('#adminList');
+  if (S.admin.tab === 'users') {
+    box.innerHTML = S.admin.users.map((u, i) =>
+      '<div class="row" data-u="' + i + '"><div class="ic">👤</div><div class="bd"><b>' + esc(u.name) + '</b><small>' + esc(u.mobile) +
+      (u.lastLogin ? ' · last ' + new Date(u.lastLogin).toLocaleDateString('en-IN') : ' · login nathi karyu') + '</small></div>' +
+      '<span class="tag ' + (u.active ? '' : 'off') + '">' + (u.active ? esc(u.role) : 'OFF') + '</span></div>').join('') ||
+      '<div class="empty">Koi user nathi</div>';
+  } else {
+    box.innerHTML = S.admin.apps.map((a, i) =>
+      '<div class="row" data-a="' + i + '"><div class="ic">' + esc(a.icon) + '</div><div class="bd"><b>' + esc(a.name) + '</b><small>' +
+      esc(a.category) + ' · ' + esc(a.roles.join(', ') || '-') + (a.url ? '' : ' · URL nathi') + '</small></div>' +
+      '<span class="tag ' + (a.active && a.url ? '' : 'off') + '">' + (a.active && a.url ? 'ON' : 'OFF') + '</span></div>').join('') ||
+      '<div class="empty">Koi app nathi</div>';
+  }
+}
+$('#adminList').onclick = e => {
+  const u = e.target.closest('[data-u]'), a = e.target.closest('[data-a]');
+  if (u) userForm(S.admin.users[+u.dataset.u]);
+  if (a) appForm(S.admin.apps[+a.dataset.a]);
+};
+$('#bAdd').onclick = () => S.admin.tab === 'users' ? userForm(null) : appForm(null);
+
+function roleOptions(sel) { return S.admin.roles.map(r => '<option' + (r === sel ? ' selected' : '') + '>' + esc(r) + '</option>').join(''); }
+
+function userForm(u) {
+  const isNew = !u; u = u || { mobile: '', name: '', role: 'SALES', active: true };
+  openSheet('<h2>' + (isNew ? 'Navo user' : 'User edit') + '</h2>' +
+    '<label class="f">Mobile</label><input class="in" id="uM" type="tel" inputmode="numeric" maxlength="10" value="' + esc(u.mobile) + '"' + (isNew ? '' : ' disabled') + '>' +
+    '<label class="f">Naam</label><input class="in" id="uN" value="' + esc(u.name) + '">' +
+    '<label class="f">Role</label><select class="in" id="uR">' + roleOptions(u.role) + '</select>' +
+    '<div class="sw"><span>Active (login kari shake)</span><input type="checkbox" id="uA"' + (u.active ? ' checked' : '') + '></div>' +
+    '<button class="btn" id="uSave">Save</button>' +
+    (isNew ? '' : '<button class="btn red" id="uReset">PIN reset karo</button>') +
+    '<div class="msg" id="uMsg"></div><div id="uPin"></div>');
+  $('#uSave').onclick = async () => {
+    const b = $('#uSave'); busy(b, true);
+    try {
+      const d = await api('adminSaveUser', { mobile: $('#uM').value, name: $('#uN').value, role: $('#uR').value, active: $('#uA').checked });
+      if (d.tempPin) showTempPin(d.tempPin, $('#uM').value, $('#uN').value);
+      else { closeSheet(); toast('Saved ✓'); }
+      setTab('users');
+    } catch (x) { $('#uMsg').textContent = x.message; }
+    busy(b, false);
+  };
+  if (!isNew) $('#uReset').onclick = async () => {
+    if (!confirm(u.name + ' no PIN reset karvo che?')) return;
+    const b = $('#uReset'); busy(b, true);
+    try { const d = await api('adminResetPin', { mobile: u.mobile }); showTempPin(d.tempPin, u.mobile, u.name); }
+    catch (x) { $('#uMsg').textContent = x.message; }
+    busy(b, false);
+  };
+}
+function showTempPin(pin, mobile, name) {
+  const link = location.href.split('#')[0].split('?')[0];
+  const text = 'Navi Energy App\n' + link + '\nMobile: ' + mobile + '\nTemporary PIN: ' + pin + '\n(Pehli vaar login pachi navo PIN banavvo padse)';
+  $('#uPin').innerHTML = '<div class="pinbox">Temporary PIN<b>' + esc(pin) + '</b><small>' + esc(name) + ' ne mokli do. Pehla login par navo PIN banavse.</small>' +
+    '<a class="btn amber" style="display:block;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/91' + encodeURIComponent(String(mobile).replace(/\D/g,'').slice(-10)) +
+    '?text=' + encodeURIComponent(text) + '">WhatsApp par mokli do</a></div>';
+}
+
+function appForm(a) {
+  const isNew = !a;
+  a = a || { id: '', name: '', icon: '📱', url: '', roles: ['ADMIN'], category: '', order: (S.admin.apps.length + 1), active: true, openMode: 'tab', passToken: false, note: '' };
+  const allRoles = ['ALL'].concat(S.admin.roles);
+  const cats = [...new Set(S.admin.apps.map(x => x.category))];
+  openSheet('<h2>' + (isNew ? 'Navi app' : 'App edit') + '</h2>' +
+    '<div class="two"><div><label class="f">Icon (emoji)</label><input class="in" id="aI" value="' + esc(a.icon) + '" style="text-align:center;font-size:24px"></div>' +
+    '<div><label class="f">Order</label><input class="in" id="aO" type="number" inputmode="numeric" value="' + esc(a.order) + '"></div></div>' +
+    '<label class="f">App naam</label><input class="in" id="aN" value="' + esc(a.name) + '">' +
+    '<label class="f">URL</label><input class="in" id="aU" type="url" placeholder="https://…" value="' + esc(a.url) + '">' +
+    '<label class="f">Category</label><input class="in" id="aC" list="catList" value="' + esc(a.category) + '"><datalist id="catList">' + cats.map(c => '<option value="' + esc(c) + '">').join('') + '</datalist>' +
+    '<label class="f">Kon joi shake?</label><div class="chips" id="aR">' + allRoles.map(r => '<button type="button" class="chip' + (a.roles.includes(r) ? ' on' : '') + '" data-r="' + esc(r) + '">' + esc(r) + '</button>').join('') + '</div>' +
+    '<label class="f">Kevi rite khule</label><select class="in" id="aM"><option value="tab"' + (a.openMode !== 'inapp' ? ' selected' : '') + '>Navi tab ma (safe, badhi app mate chale)</option><option value="inapp"' + (a.openMode === 'inapp' ? ' selected' : '') + '>App ni andar j</option></select>' +
+    '<div class="sw"><span>Active</span><input type="checkbox" id="aA"' + (a.active ? ' checked' : '') + '></div>' +
+    '<div class="sw"><span>NE login pass karo (navi apps mate)</span><input type="checkbox" id="aT"' + (a.passToken ? ' checked' : '') + '></div>' +
+    '<button class="btn" id="aSave">Save</button><div class="msg" id="aMsg"></div>');
+  $('#aR').onclick = e => { const c = e.target.closest('[data-r]'); if (c) c.classList.toggle('on'); };
+  $('#aSave').onclick = async () => {
+    const roles = [...document.querySelectorAll('#aR .chip.on')].map(c => c.dataset.r);
+    if (!roles.length) { $('#aMsg').textContent = 'Ochama ochi ek role select karo'; return; }
+    const b = $('#aSave'); busy(b, true);
+    try {
+      await api('adminSaveApp', { app: { id: a.id, name: $('#aN').value, icon: $('#aI').value, url: $('#aU').value, roles: roles.join(','),
+        category: $('#aC').value || 'Other', order: $('#aO').value, active: $('#aA').checked, openMode: $('#aM').value, passToken: $('#aT').checked, note: a.note } });
+      closeSheet(); toast('Saved ✓ — badha na phone ma refresh par dekhase'); setTab('apps');
+    } catch (x) { $('#aMsg').textContent = x.message; }
+    busy(b, false);
+  };
+}
+
+/* ---------- PWA ---------- */
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; });
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  const hadCtrl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register('sw.js');
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloaded && hadCtrl) { reloaded = true; toast('Navu update aavyu ✓'); setTimeout(() => location.reload(), 900); } });
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.token && !$('#vHome').classList.contains('hide')) refresh(true); });
+
+/* ---------- START ---------- */
+$('#coName').textContent = CFG.COMPANY || 'Navi Energy';
+if (S.token && S.user) {
+  if (S.user.mustChange) openPinScreen(true);
+  else { renderHome(); show('vHome'); }
+  refresh(true);
+} else {
+  show('vLogin');
+  if (!CFG.API_URL || CFG.API_URL.indexOf('PASTE') === 0) $('#mLogin').textContent = 'Setup baaki: config.js ma API_URL nakho';
+}
+</script>
+</body>
+</html>
