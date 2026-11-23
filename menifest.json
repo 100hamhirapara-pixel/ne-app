@@ -1,0 +1,16 @@
+{
+  "name": "Navi Energy",
+  "short_name": "NE App",
+  "description": "Navi Energy team apps — ek j jagya e",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B3D5C",
+  "theme_color": "#0B3D5C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
