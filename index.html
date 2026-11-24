@@ -311,6 +311,9 @@ function openApp(a) {
   if (!a) return;
   S.uses[a.id] = Date.now(); store.set('ne_uses', S.uses);
   const url = appUrl(a);
+  let same = false;
+  try { same = new URL(url, location.href).origin === location.origin; } catch (e) {}
+  if (same) { location.href = url; return; }   // NE App ni potani screen (jem ke Stock) — app ni andar j khule
   if (a.openMode === 'inapp') {
     $('#frameTitle').textContent = a.name;
     $('#frameEl').src = url;
